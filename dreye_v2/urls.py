@@ -21,5 +21,6 @@ from django.urls import re_path as url  # 有class就要放
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", views.index),
     url("^callback", views.callback),  # 呼叫class用url 且名稱前要+"^"
 ]

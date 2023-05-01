@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from linebot.models import MessageEvent, TextSendMessage
 from django.shortcuts import render, HttpResponse
 
@@ -67,4 +68,9 @@ def callback(request):
         return HttpResponse()
     else:
         return HttpResponseBadRequest()
+
 # -------------------------------------------------------------------------------
+
+
+def index(request):
+    return HttpResponse("my dict!")

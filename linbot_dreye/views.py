@@ -38,25 +38,32 @@ def callback(request):
 
         for event in events:
             if isinstance(event, MessageEvent):
-
                 text = event.message.text
                 text = text.lower()  # 網址大寫會出錯
                 url = f'https://yun.dreye.com/dict_new/dict.php?w={text}&hidden_codepage=01'
                 datas = ''
+
                 try:
                     resp = requests.get(url)
                     soup = BeautifulSoup(resp.text, 'lxml')
-                    dicts = soup.find(id="infotab1").find_all(
-                        'div', class_="sg block")
-                    tran = dicts[0].find('ol').find_all('li')
-                    # print(tran)  # debug
 
-                    if tran is None:
-                        datas = '無法辨識此單字, 請再次確認'
+                    if soup.find(id="infotab1") is None:
+                        sw = soup.find(
+                            'div', class_="q_middle_bd").find_all('p')
+                        if len(sw) > 1:  # 判斷是否有建議單字
+                            maybes = soup.find(
+                                'div', class_="q_middle_bd").find_all('a')
+                            datas += f"抱歉,暫無您搜尋的單字, 您可能再找: \n"
+                            for m in range(len(maybes)):
+                                datas += f"【{m + 1}】{maybes[m].text} \n"
+                        else:
+                            datas += f"抱歉,暫無您搜尋的單字, 建議檢查輸入的單字是否有誤？"
                     else:
+                        dicts = soup.find(id="infotab1").find_all(
+                            'div', class_="sg block")
+                        tran = dicts[0].find('ol').find_all('li')
                         for i in range(len(tran)):
-                            datas += f"【{i+1}】{tran[i].text.strip()} \n"
-                    print(datas)
+                            datas += f"【{i + 1}】{tran[i].text.strip()} \n"
 
                 except Exception as e:
                     print(e)
